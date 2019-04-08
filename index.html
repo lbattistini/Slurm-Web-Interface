@@ -63,7 +63,7 @@
             </div>
         </div>
         <script>
- 	setInterval(function(){updateJobMenu();}, 3000);
+ 	setInterval(function(){updateJobMenu();}, 1500);
 	function loadDoc(url, cFunction,data) {
 			var xhttp;
 			xhttp = new XMLHttpRequest();
@@ -160,30 +160,32 @@
 					if (data != null) {
 						var st = String(xhttp.responseText);
 						st = st.replace('\n','');
+						console.log(st);
 						var elem = document.getElementById(data).getElementsByTagName("a")[0];
 						if(elem != null){
-							if(st === "NE"){
-				//				elem.style.color = "blue";
+							if(st === "NOTFOUND"){
+								elem.style.color = "grey";
 							}
 							
-								else if((st === "BF") || (st === "F") || (st === "DL") || (st === "NF")){
+								else if((st === "CANCELLED") || (st === "FAILED") || (st === "TIMEOUT") || (st === "NODE_FAIL")){
 									//job failed
 									elem.style.color= "red";
 								
 								}
-									else if((st === "CF") || (st === "PD")){
+									else if((st === "PENDING")){
 										//waiting
 										elem.style.color= "yellow";
 									}	
-										else if(st === "R") {								
-											//running
+										else if(st === "RUNNING" || (st === "COMPLETING")) {																			//running
 											elem.style.color= "#00ff00";
 										}
-											else if(st === "CG") {
+											else if(st === "COMPLETED") {
 												elem.style.color = "#00ff00";
+												if(elem.innerHTML.includes("END") == false)
+													elem.innerHTML+="(END)";
 											}
 										
-												else if(st === "CE") {
+												else {
 													elem.style.color = "orange";
 												}
 							}
@@ -191,7 +193,11 @@
 					}
 				for (i = 0; i < items.length; i++) {
 					jid=items[i].id;
-					loadDoc("cgi/check.cgi?id="+jid,f,jid);	
+					var li = document.getElementById(jid);
+					var aH = li.getElementsByTagName("a")[0];
+					if(aH.innerHTML.includes("END") == false)					
+						loadDoc("cgi/check.cgi?id="+jid,f,jid);	
+					
 				}
 		    }
 		}
