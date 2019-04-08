@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>       
+	<title>SlurmScriptBuilder</title>
+        <style>
+		@import url("css/minimal.css");
+       </style>
+    </head>
+
+    <body>
+
+    <div id="tabMenu">
+    <ul class="topenv" id="joblist">
+    </ul>
+    </div>
+	<div class="centered">
+        <img src="images/code-terminal.png" alt="logo" > 
+        </div>
+        <div class="split left ">
+            <div class="creator">
+	<form>
+	<h2> Parameters: </h2>
+            <table>
+	   <tr>
+		<td>
+		Partition: <input type="radio" name="fpartition" id="fpartition1" value="netlab" checked onclick="updateScript('partition')" >netlab
+                          <input type="radio" name="fpartition" id="fpartition2" value="wn" onclick="updateScript('partition')">wn<br>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Number of nodes: <input type="text" id="fnodesNum" maxlength="1" size="1" value="1" oninput="updateScript('nodesNum')"><br>
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+           	     Number of CPUs: <input type="text" id="fCPUNum" maxlength="1" size="1" value="1" oninput="updateScript('CPUNum')">
+                </td>
+            </tr>
+            <tr>
+                <td>Insert your code here:<br>
+                    <textarea id="fyourCode" rows="4" cols="50"  oninput="updateScript('yourCode')"></textarea>
+                </td>
+            </tr>
+        </table>
+                <input type="text" id="result" name="script" value="changeme" hidden="hidden">
+                <button type="button" onclick="send()"> Submit</button>
+	</form>
+            </div>
+        </div>
+        <div class="split right">
+            <div class="script">
+            <h2>Result Script:</h2>
+            <p>#!/bin/bash</p>
+            <p>#SBATCH --output=<span id="output">%x.o%j </span></p>
+            <p>#SBATCH --partition=<span id="partition">netlab</span><p>
+            <p>##SBATCH --nodes=<span id="nodesNum">1</span></p>
+            <p>##SBATCH --cpus-per-task=<span id="CPUNum">1</span></p>
+            <p>#SBATCH --time=<span id="time">00:05:00</span><p>
+            <p>#SBATCH --account=<span id="account">T_2018_HPCPROGPAR</span></p>
+            <p><span id="yourCode"></span></p>
+            </div>
+        </div>
+        <script>
+ 	setInterval(function(){updateJobMenu();}, 3000);
+	function loadDoc(url, cFunction,data) {
+			var xhttp;
+			xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				cFunction(this,data);
+			}
+			};
+			xhttp.open("GET", url, true);
+			xhttp.send();
+		}
+
+		function scriptLoad(xhttp){
+			function addJobLink(jid) {
+				var list = document.getElementById("joblist");
+				var res = "<li id=\"" + jid + "\" ><a href=\"view.html?id=" + jid + " \" target=\"_blank\" >" + jid + "</a></li>"
+				list.innerHTML += res;
+				}
+			addJobLink(xhttp.responseText);
+			updateJobMenu();	
+		}
+
+            	function getElem(elem) {            
+                	return document.getElementById(elem); 
+	        }   
+
+            	function getElemValue(elem) {
+                	//radio button case
+	                var val = "";
+        	        if (getElem(elem) == null) {
+                	    elem = elem.concat("1");
+	                    o = getElem(elem);
+        	            if(o == null) {
+                	        val = null;
+                    	}
+                        	else{
+	                            if(o.checked == true){
+        	                        val = o.value;
+                	            }
+                        	        else{
+                                	    elem = elem.replace(/[0-9]/g, '');
+	                                    o = getElem(elem.concat("2"));
+        	                            val = o.value;
+                	                }
+                        	}
+	                    return val;
+        	        }
+                	    else{
+                        	val = getElem(elem).value;
+	                        while(val.includes('\n')) {
+        	                    val = val.replace('\n',"<br>");
+                	        }
+	                        return val;
+        	            }
+	            }
+
+        	    function updateScript(name) {
+                	var form_label = "f";
+	                var v_output = getElemValue(form_label.concat(name));
+	                var output = getElem(name);
+	                output.innerHTML =v_output;
+        	    }   
+
+	            function send() {
+	                const CHEAD = "#!/bin/bash";
+	                const COUTPUT ="#SBATCH --output=";
+	                const CPARTITION = "#SBATCH --partition=";
+	                const CNODES = "##SBATCH --nodes=";
+	       	        const CPU = "##SBATCH --cpus-per-task=";
+	                const CTIME = "#SBATCH --time=";
+	                const CACCOUNT = "#SBATCH --account=";
+	                
+	                const prefS = [COUTPUT,CPARTITION,CNODES,CPU,CTIME,CACCOUNT,""];
+        	        var idS = ["output","partition","nodesNum","CPUNum","time","account","yourCode"];
+	                var res = CHEAD.concat('<br>');
+	                for (var i = 0; i < idS.length; i++) {                    
+	                    res = res.concat(prefS[i]);
+	                    res = res.concat((document.getElementById(idS[i]).innerHTML));
+	                    res = res.concat('<br>');
+	                }
+	
+	                var sc = getElem("result");
+	                sc.value = res;
+			res = encodeURIComponent(res);
+			res = "cgi/load.cgi?script="+res;
+	                loadDoc(res,scriptLoad);
+	            }
+
+		    function updateJobMenu() {
+			var list = document.getElementById("joblist");
+			var items = list.getElementsByTagName("li");	
+			if(items.length > 0) {
+				function f(xhttp,data){
+					if (data != null) {
+						var st = String(xhttp.responseText);
+						st = st.replace('\n','');
+						var elem = document.getElementById(data).getElementsByTagName("a")[0];
+						if(elem != null){
+							if(st === "NE"){
+				//				elem.style.color = "blue";
+							}
+							
+								else if((st === "BF") || (st === "F") || (st === "DL") || (st === "NF")){
+									//job failed
+									elem.style.color= "red";
+								
+								}
+									else if((st === "CF") || (st === "PD")){
+										//waiting
+										elem.style.color= "yellow";
+									}	
+										else if(st === "R") {								
+											//running
+											elem.style.color= "#00ff00";
+										}
+											else if(st === "CG") {
+												elem.style.color = "#00ff00";
+											}
+										
+												else if(st === "CE") {
+													elem.style.color = "orange";
+												}
+							}
+						}
+					}
+				for (i = 0; i < items.length; i++) {
+					jid=items[i].id;
+					loadDoc("cgi/check.cgi?id="+jid,f,jid);	
+				}
+		    }
+		}
+        </script>
+    </body>
+</html>

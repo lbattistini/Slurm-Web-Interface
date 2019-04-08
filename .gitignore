@@ -1,0 +1,4 @@
+cgi/file*
+*.bash
+*.swp
+*.swo

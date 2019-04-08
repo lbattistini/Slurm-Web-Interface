@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>JobViewer</title>
+	        <style>
+			@import url("css/minimal.css");
+	        </style>
+		<script>
+			window.onload = function() {
+				actualURL = window.location.href;
+				actualURLValues = actualURL.substring(actualURL.indexOf("=") + 1);
+				var killButton= document.getElementById("kill");
+				killButton.value = actualURLValues;
+				window.setInterval(function(){
+					loadDoc("cgi/showinfo.cgi?id="+actualURLValues,showInfo);
+					},3000);
+			
+				window.setInterval(function(){
+				loadDoc("cgi/showout.cgi?id="+actualURLValues,showOut);
+				},3000);
+				var p = document.getElementById("target");
+				p.innerHTML += "<h2>JOB ID : " + actualURLValues + "</h2>";
+			}
+		</script>
+	</head>
+    <body>
+	<div class="centered">
+       	 <img src="images/code-terminal.png" alt="logo" >
+        </div>
+	<div class="split left">
+	<div class="creator">
+	<p id="target">
+	<button class="floated" id="kill" type="button" onclick="kill(this)" value="" >Kill</button>
+	</p>
+ 
+	<p id="result">Waiting for Job info...</p></div>
+	</div>
+	<div class="split right">
+	<div class="script">
+	<h2> OUTPUT: </h2>
+	<p id="output">Waiting for file output...</p>
+	</div>
+	</div>
+	<script>
+			function loadDoc(url, cFunction) {
+				var xhttp;
+	  			xhttp = new XMLHttpRequest();
+  				xhttp.onreadystatechange = function() {
+    				if (this.readyState == 4 && this.status == 200) {
+      					cFunction(this);
+		    		}
+	  		};
+	  		xhttp.open("GET", url, true);
+	  		xhttp.send();
+			}
+
+			function showInfo(xhttp){
+				var result = xhttp.responseText;
+				document.getElementById("result").innerHTML = result;;
+			}
+
+			function showOut(xhttp) {
+				var result = xhttp.responseText;
+				document.getElementById("output").innerHTML = result;
+			}
+
+		/*	function getQueue(xhttp) {
+				var s = xhttp.responseText;
+				var lines = s.split('\n');			
+				var parag = document.getElementById("queue");
+				var result = "<table>"			
+				for(var i = 0; i < lines.length; i++) {
+					result = result + "<tr>"
+					var elems = lines[i].split(' ');
+					for(var j = 0; j < elems.length; j++) {
+						if( elems[j] != "") {
+							result = result + "<td>" + elems[j] + "</td>" 		
+						}
+					}
+					if (elems[0] != "")
+						result = result + "<td> <button onclick=loadDoc('cgi/kill.cgi?id=" + elems[0] + "',killj)>x</button>"
+					result = result + "</tr>"
+				}
+				result =  result + "</table>"
+				
+				//update the queue...
+				parag.innerHTML = result;
+				loadDoc("cgi/queue.cgi",getQueue);
+			}*/
+			
+			function kill(button) {
+				loadDoc("cgi/kill.cgi?id="+button.value,killj);
+			}
+			
+			function killj(xhttp) {
+				//console.log(xhttp.responseText);
+			}
+		</script>
+</body>
+</html>
