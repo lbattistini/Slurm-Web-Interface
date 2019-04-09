@@ -63,6 +63,9 @@
             </div>
         </div>
         <script>
+	window.onload=function() {
+		restoreJobs();
+	}
  	setInterval(function(){updateJobMenu();}, 1500);
 	function loadDoc(url, cFunction,data) {
 			var xhttp;
@@ -78,10 +81,26 @@
 
 		function scriptLoad(xhttp){
 			function addJobLink(jid) {
-				var list = document.getElementById("joblist");
-				var res = "<li id=\"" + jid + "\" ><a href=\"view.html?id=" + jid + " \" target=\"_blank\" >" + jid + "</a></li>"
-				list.innerHTML += res;
+				if(!jid.includes("no job submitted")) {
+					var list = document.getElementById("joblist");
+					if(document.getElementById(jid) == null) {
+						var res = "<li id=\"" + jid + "\" ><a href=\"view.html?id=" + jid + " \" target=\"_blank\" >" + jid + "</a></li>"
+						list.innerHTML += res;
+						var jlist = "";
+						var ret = getCookie("jobsCookies");
+						if(!(ret == "" && ret == null)) {
+							jlist = ret;
+						}
+						while(jid.includes('\n'))
+							jid = jid.replace('\n','');
+						
+						if(!jlist.includes(jid)){
+							jlist = jlist + "-" + jid;
+							setCookie("jobsCookies",jlist,1);
+						}
+					}
 				}
+			}
 			addJobLink(xhttp.responseText);
 			updateJobMenu();	
 		}
@@ -160,7 +179,6 @@
 					if (data != null) {
 						var st = String(xhttp.responseText);
 						st = st.replace('\n','');
-						console.log(st);
 						var elem = document.getElementById(data).getElementsByTagName("a")[0];
 						if(elem != null){
 							if(st === "NOTFOUND"){
@@ -176,7 +194,7 @@
 										//waiting
 										elem.style.color= "yellow";
 									}	
-										else if(st === "RUNNING" || (st === "COMPLETING")) {																			//running
+										else if(st === "RUNNING" || (st === "COMPLETING")) {																							   //running
 											elem.style.color= "#00ff00";
 										}
 											else if(st === "COMPLETED") {
@@ -201,6 +219,51 @@
 				}
 		    }
 		}
+	
+
+	function restoreJobs(){
+		class fakeXhttp {
+			constructor(val) {
+				this.responseText = val;
+			}
+		}
+		var tmp = getCookie("jobsCookies");
+		if(tmp != null &&  tmp != null){
+			var jList = tmp.split("-");
+			for ( i = 0 ; i < jList.length; i++) {
+				jid = jList[i];
+				if(jid != "") {
+					var jidX = new fakeXhttp(jid);
+					scriptLoad(jidX);
+				}
+			}
+		}
+	}
+
+	//cookies management
+	function setCookie(cname, cvalue, exdays) {
+		var d = new Date();
+  		d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  		var expires = "expires="+ d.toUTCString();
+  		document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+	}
+
+	function getCookie(cname) {
+		var name = cname + "=";
+  		var decodedCookie = decodeURIComponent(document.cookie);
+		var ca = decodedCookie.split(';');
+  		for(var i = 0; i <ca.length; i++) {
+    			var c = ca[i];
+    			while (c.charAt(0) == ' ') {
+      			c = c.substring(1);
+    			}
+    			if (c.indexOf(name) == 0) {
+      			return c.substring(name.length, c.length);
+    			}
+	}		
+	return "";
+	}
+
         </script>
     </body>
 </html>
