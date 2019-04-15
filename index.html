@@ -55,8 +55,8 @@
             <p>#!/bin/bash</p>
             <p>#SBATCH --output=<span id="output">%x.o%j </span></p>
             <p>#SBATCH --partition=<span id="partition">netlab</span><p>
-            <p>##SBATCH --nodes=<span id="nodesNum">1</span></p>
-            <p>##SBATCH --cpus-per-task=<span id="CPUNum">1</span></p>
+            <p>#SBATCH --nodes=<span id="nodesNum">1</span></p>
+            <p>#SBATCH --cpus-per-task=<span id="CPUNum">1</span></p>
             <p>#SBATCH --time=<span id="time">00:05:00</span><p>
             <p>#SBATCH --account=<span id="account">T_2018_HPCPROGPAR</span></p>
             <p><span id="yourCode"></span></p>
@@ -150,8 +150,8 @@
 	                const CHEAD = "#!/bin/bash";
 	                const COUTPUT ="#SBATCH --output=";
 	                const CPARTITION = "#SBATCH --partition=";
-	                const CNODES = "##SBATCH --nodes=";
-	       	        const CPU = "##SBATCH --cpus-per-task=";
+	                const CNODES = "#SBATCH --nodes=";
+	       	        const CPU = "#SBATCH --cpus-per-task=";
 	                const CTIME = "#SBATCH --time=";
 	                const CACCOUNT = "#SBATCH --account=";
 	                
