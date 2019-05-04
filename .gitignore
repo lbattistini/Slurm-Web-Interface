@@ -2,3 +2,5 @@ cgi/file*
 *.bash
 *.swp
 *.swo
+cgi/*.png
+cgi/*.bmp

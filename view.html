@@ -64,30 +64,6 @@
 				document.getElementById("output").innerHTML = result;
 			}
 
-		/*	function getQueue(xhttp) {
-				var s = xhttp.responseText;
-				var lines = s.split('\n');			
-				var parag = document.getElementById("queue");
-				var result = "<table>"			
-				for(var i = 0; i < lines.length; i++) {
-					result = result + "<tr>"
-					var elems = lines[i].split(' ');
-					for(var j = 0; j < elems.length; j++) {
-						if( elems[j] != "") {
-							result = result + "<td>" + elems[j] + "</td>" 		
-						}
-					}
-					if (elems[0] != "")
-						result = result + "<td> <button onclick=loadDoc('cgi/kill.cgi?id=" + elems[0] + "',killj)>x</button>"
-					result = result + "</tr>"
-				}
-				result =  result + "</table>"
-				
-				//update the queue...
-				parag.innerHTML = result;
-				loadDoc("cgi/queue.cgi",getQueue);
-			}*/
-			
 			function kill(button) {
 				loadDoc("cgi/kill.cgi?id="+button.value,killj);
 			}

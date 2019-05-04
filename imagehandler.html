@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>ImageHandler</title>
+	        <style>
+			@import url("css/minimal.css");
+	        </style>
+		<script>
+			window.onload = function() {
+				actualURL = window.location.href;
+				actualURLValues = actualURL.substring(actualURL.indexOf("=") + 1);
+			}
+		</script>
+	</head>
+    <body>
+	<div class="split left">
+	<div class="creator">
+	<p><h2>Uploaded Image:</h2></p>
+	<img src="cgi/prev_image.bmp"><br><br>
+	<button id="processButton" onclick="processImgInv()">Process</button>
+	</div>	
+	<div class="split right">
+	<div class="script">
+	<p> <h2> Processed image: </h2> <p>
+	<p id="wMessage" hidden="hidden">Processing image...</p> 
+	<img src="" id="imgRes" hidden="hidden"> 
+	</div>
+	</div>
+	
+	<script>
+			function loadDoc(url, cFunction) {
+				var xhttp;
+	  			xhttp = new XMLHttpRequest();
+  				xhttp.onreadystatechange = function() {
+    				if (this.readyState == 4 && this.status == 200) {
+      					cFunction(this);
+		    		}
+	  		};
+	  		xhttp.open("GET", url, true);
+	  		xhttp.send();
+			}
+
+			function processImgInv() {
+				var p = document.getElementById("wMessage");
+				p.hidden = false;	
+				loadDoc("cgi/processimg.cgi",processImg);
+			}
+			
+			function processImg(xhttp) {
+				var resp = xhttp.responseText;
+				resp = resp.replace('\n','');
+				var p = document.getElementById("wMessage");
+				if(resp === "ok"){
+					var resarea = document.getElementById("imgRes");
+					resarea.hidden = false;
+					resarea.src="cgi/risultato.bmp";
+				}
+				p.hidden = "hidden";
+			}
+		</script>
+</body>
+</html>

@@ -49,9 +49,10 @@
          </form>   
          <br><br><br>
             <h3>Image upload:</h3>           
-            <form action="cgi/imagehandler.py">
+            <form id="fupload" action="cgi/imagehandler.cgi" method="post" enctype="multipart/form-data">
                 <input type="file" id="fileupload" onchange="checkimgsize(this)" name="pic" accept="image/*">
                 <input type="submit" value="Upload">
+		<input type="text" id="b64val" name="img" hidden="hidden" >
             </form>
 
 	
@@ -258,12 +259,20 @@
             var lsize = input.files[0].size;
             lsize = (lsize/1024)/1024; //MB conv.
             if(lsize < MAXSIZE) {
-                //ok...
+	    	var reader  = new FileReader();
+		reader.addEventListener("load", function () {
+			var fupl = document.getElementById("b64val");
+			var rr = reader.result;
+			rr = rr.replace('data:image/jpeg;base64,',"");
+			fupl.value = rr;
+	  		}, false);
+			
+		reader.readAsDataURL(input.files[0]);
             }
                 else {
                         var message = "Image size must be <= " + MAXSIZE + " MB";
                         alert(message);
-                        document.getElementById("fileupload").value = "";
+                       document.getElementById("fileupload").value = "";
                 }
         }
     }
