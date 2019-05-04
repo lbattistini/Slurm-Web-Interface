@@ -49,7 +49,7 @@
          </form>   
          <br><br><br>
             <h3>Image upload:</h3>           
-            <form id="fupload" action="cgi/imagehandler.cgi" method="post" enctype="multipart/form-data">
+            <form id="fupload" action="cgi/imagehandler.cgi" method="post" enctype="multipart/form-data" target="blank">
                 <input type="file" id="fileupload" onchange="checkimgsize(this)" name="pic" accept="image/*">
                 <input type="submit" value="Upload">
 		<input type="text" id="b64val" name="img" hidden="hidden" >

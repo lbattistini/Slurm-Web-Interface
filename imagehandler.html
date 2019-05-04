@@ -23,7 +23,10 @@
 	<div class="script">
 	<p> <h2> Processed image: </h2> <p>
 	<p id="wMessage" hidden="hidden">Processing image...</p> 
-	<img src="" id="imgRes" hidden="hidden"> 
+	<a id="imgResA" href="" download hidden="hidden">
+		<img src="" id="imgRes">
+		<p><h3>Download image</h3></p>
+	</a>
 	</div>
 	</div>
 	
@@ -52,8 +55,10 @@
 				var p = document.getElementById("wMessage");
 				if(resp === "ok"){
 					var resarea = document.getElementById("imgRes");
-					resarea.hidden = false;
+					var resareaA = document.getElementById("imgResA");
+					resareaA.hidden = false;
 					resarea.src="cgi/risultato.bmp";
+					resareaA.href="cgi/risultato.bmp";
 				}
 				p.hidden = "hidden";
 			}
